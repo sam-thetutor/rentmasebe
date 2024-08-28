@@ -3,8 +3,8 @@ import Principal "mo:base/Principal";
 import Time "mo:base/Time";
 import Result "mo:base/Result";
 import Bool "mo:base/Bool";
-import Array "mo:base/Array";
 import Nat "mo:base/Nat";
+import Nat64 "mo:base/Nat64";
 import Types "types";
 
 actor {
@@ -18,6 +18,7 @@ actor {
     stable var users = List.nil<User>();
 
     public shared ({ caller }) func registerUser(payload : Types.UserPayload) : async Result.Result<User, Text> {
+        assert(not Principal.isAnonymous(caller));
         switch (payload.referrerCode) {
             case (null) {
                 let user = _createUser(payload, caller);
@@ -150,6 +151,12 @@ actor {
             };
             case (?_user) {
                 let rewardslist = List.fromArray<Types.Reward>(_user.rewards);
+                let _claimedRewards = List.filter<Types.Reward>(
+                    rewardslist,
+                    func(reward : Types.Reward) : Bool {
+                        return reward.claimed == true;
+                    },
+                );
                 let unclaimedRewards = List.filter<Types.Reward>(
                     rewardslist,
                     func(reward : Types.Reward) : Bool {
@@ -161,6 +168,35 @@ actor {
                     return #err("Insufficient rewards, " # Nat.toText(unclaimedSize) # " rewards available");
                 };
                 let tobeClaimedRewards = List.take<Types.Reward>(unclaimedRewards, amount);
+                switch (await transferRewards(wallet, amount * rewardAmount)) {
+                    case (#err(err)) {
+                        return #err(err);
+                    };
+                    case (#ok(_)) {
+                        let claimedRewards = List.map<Types.Reward, Types.Reward>(
+                            tobeClaimedRewards,
+                            func(reward : Types.Reward) : Types.Reward {
+                                return { reward with claimed = true; claimedAt = ?Time.now() };
+                            },
+                        );
+                        let remainingRewards = List.drop<Types.Reward>(unclaimedRewards, amount);
+                        let combinedRewards = List.append<Types.Reward>(claimedRewards, remainingRewards);
+                        let updatedRewards = List.append<Types.Reward>(combinedRewards, _claimedRewards);
+                        let updatedUser : User = {
+                            _user with
+                            rewards = List.toArray<Types.Reward>(updatedRewards);
+                        };
+                        func updateUser(u : User) : User {
+                            if (u.id == _user.id) {
+                                return updatedUser;
+                            } else {
+                                return u;
+                            };
+                        };
+                        users := List.map(users, updateUser);
+                        return #ok(());
+                    };
+                };
 
 
                 return #ok(());
@@ -178,7 +214,45 @@ actor {
           created_at_time = null;
           amount = amount * tokenDecimals;
       };
+      switch (await _actor.icrc1_transfer(transferArg)) {
+          case (#Err(err)) {
+              return #err(handleTransferError(err));
+          };
+          case (#Ok(_)) {
+              return #ok(());
+          };
+      };
       return #ok(());
     };
+
+     func handleTransferError(err : Types.TransferError) : Text {
+        return switch (err) {
+            case (#GenericError(details)) {
+                "Generic error: " # details.message # " (code: " # Nat.toText(details.error_code) # ")";
+            };
+            case (#TemporarilyUnavailable) {
+                "Temporarily unavailable";
+            };
+            case (#BadBurn(details)) {
+                "Bad burn, minimum amount: " # Nat.toText(details.min_burn_amount);
+            };
+            case (#Duplicate(details)) {
+                "Duplicate transaction, original ID: " # Nat.toText(details.duplicate_of);
+            };
+            case (#BadFee(details)) {
+                "Incorrect fee, expected: " # Nat.toText(details.expected_fee);
+            };
+            case (#CreatedInFuture(details)) {
+                "Created in the future, ledger time: " # Nat64.toText(details.ledger_time);
+            };
+            case (#TooOld) {
+                "Transaction too old";
+            };
+            case (#InsufficientFunds(details)) {
+                "Insufficient funds, balance: " # Nat.toText(details.balance);
+            };
+        };
+    };
+
 
 };

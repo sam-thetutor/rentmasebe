@@ -1,6 +1,6 @@
 {
   "canisters": {
-    "referral_backend": {
+    "backend": {
       "main": "src/referral_backend/main.mo",
       "type": "motoko"
     }
