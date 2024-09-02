@@ -12,7 +12,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://impactchain-delta.vercel.app",
+      "https://rentmase.xyz",
       "http://localhost:3000", 
     ],
     credentials: true, 
