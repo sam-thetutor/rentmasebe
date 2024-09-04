@@ -34,8 +34,13 @@ export const getAccessToken = async (req: Request, res: Response) => {
       maxAge: 60 * 60 * 1000, 
     });
 
-    res.json({ message: 'Access token saved in HTTP-only cookie' });
+    res.json({ message: "Authenticarted" });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch access token' });
   }
+}
+
+export const logout = (req: Request, res: Response) => {
+  res.clearCookie('reloadly_access_token');
+  res.json({ message: 'Access token removed from cookie' });
 }

@@ -20,11 +20,31 @@ module {
         createdAt : Time.Time;
     };
 
-   public type Reward = {
+    public type Reward = {
         amount : Nat;
         claimed : Bool;
         claimedAt : ?Time.Time;
         timestamp : Time.Time;
+    };
+
+    public type InternalTransacion = {
+        id : Nat;
+        txnType : TxnType;
+        status : TxnStatus;
+        timestamp : Time.Time;
+    };
+
+    type TxnType = {
+        #AirtimeTopup;
+        #DataTopup;
+        #BillsPayment;
+        #GiftCardPurchase;
+    };
+
+    type TxnStatus = {
+        #Pending;
+        #Success;
+        #Failed;
     };
 
 /*************************

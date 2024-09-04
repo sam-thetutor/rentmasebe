@@ -3,8 +3,8 @@ import { airTimeDataTopUp, getAllOperators, getCountryOperators, getNumberOperat
 import { Router } from "express";
 
 export default (router: Router) => {
-  router.post("/buy/topup-airtime", airTimeDataTopUp);
-  router.get("/buy/get-operators", getAllOperators);
-  router.get("/buy/country-operators", getCountryOperators);
-  router.post("/buy/number-operator", getNumberOperator);
+  router.post("/topup-airtime", airTimeDataTopUp);
+  router.get("/get-operators", getAllOperators);
+  router.get("/country-operators", getCountryOperators);
+  router.get("/number-operator", getNumberOperator);
 };

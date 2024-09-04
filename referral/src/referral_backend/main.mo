@@ -8,17 +8,17 @@ import Nat64 "mo:base/Nat64";
 import Types "types";
 
 actor {
-      type User = Types.User;
-      type TokenInterface = Types.TokenInterface;
+    type User = Types.User;
+    type TokenInterface = Types.TokenInterface;
 
     var rewardAmount = 100;
     let tokenCanister = "rrkah-fqaaa-aaaaa-aaaaq-cai";
-    let tokenDecimals= 100_000_000;
+    let tokenDecimals = 100_000_000;
 
     stable var users = List.nil<User>();
 
     public shared ({ caller }) func registerUser(payload : Types.UserPayload) : async Result.Result<User, Text> {
-        assert(not Principal.isAnonymous(caller));
+        assert (not Principal.isAnonymous(caller));
         switch (payload.referrerCode) {
             case (null) {
                 let user = _createUser(payload, caller);
@@ -60,8 +60,8 @@ actor {
                             };
                         };
                         users := List.map(users, updateUser);
-                       let user = _createUser(payload, caller);
-                       return #ok(user);
+                        let user = _createUser(payload, caller);
+                        return #ok(user);
                     };
                 };
             };
@@ -84,7 +84,7 @@ actor {
         return user;
     };
 
-    public shared ({caller}) func updateProfile(payload : Types.UserPayload) : async Result.Result<User, Text> {
+    public shared ({ caller }) func updateProfile(payload : Types.UserPayload) : async Result.Result<User, Text> {
         let user = List.find<User>(
             users,
             func(user : User) : Bool {
@@ -133,12 +133,12 @@ actor {
         };
     };
 
-    public shared query ({caller}) func getAllUsers() : async [User] {
-        assert(Principal.isController(caller));
+    public shared query ({ caller }) func getAllUsers() : async [User] {
+        assert (Principal.isController(caller));
         return List.toArray<User>(users);
     };
 
-    public shared ({caller}) func redeemRewards(wallet: Principal, amount: Nat) : async Result.Result<(), Text> {
+    public shared ({ caller }) func redeemRewards(wallet : Principal, amount : Nat) : async Result.Result<(), Text> {
         let user = List.find<User>(
             users,
             func(user : User) : Bool {
@@ -176,7 +176,10 @@ actor {
                         let claimedRewards = List.map<Types.Reward, Types.Reward>(
                             tobeClaimedRewards,
                             func(reward : Types.Reward) : Types.Reward {
-                                return { reward with claimed = true; claimedAt = ?Time.now() };
+                                return {
+                                    reward with claimed = true;
+                                    claimedAt = ?Time.now();
+                                };
                             },
                         );
                         let remainingRewards = List.drop<Types.Reward>(unclaimedRewards, amount);
@@ -198,34 +201,33 @@ actor {
                     };
                 };
 
-
                 return #ok(());
             };
         };
-    } ;
-
-    func transferRewards(wallet: Principal, amount: Nat) : async Result.Result<(), Text> {
-      let _actor = actor (tokenCanister) : TokenInterface;
-      let transferArg : Types.TransferArg = {
-          to = { owner = wallet; subaccount = null };
-          fee = null;
-          memo = null;
-          from_subaccount = null;
-          created_at_time = null;
-          amount = amount * tokenDecimals;
-      };
-      switch (await _actor.icrc1_transfer(transferArg)) {
-          case (#Err(err)) {
-              return #err(handleTransferError(err));
-          };
-          case (#Ok(_)) {
-              return #ok(());
-          };
-      };
-      return #ok(());
     };
 
-     func handleTransferError(err : Types.TransferError) : Text {
+    func transferRewards(wallet : Principal, amount : Nat) : async Result.Result<(), Text> {
+        let _actor = actor (tokenCanister) : TokenInterface;
+        let transferArg : Types.TransferArg = {
+            to = { owner = wallet; subaccount = null };
+            fee = null;
+            memo = null;
+            from_subaccount = null;
+            created_at_time = null;
+            amount = amount * tokenDecimals;
+        };
+        switch (await _actor.icrc1_transfer(transferArg)) {
+            case (#Err(err)) {
+                return #err(handleTransferError(err));
+            };
+            case (#Ok(_)) {
+                return #ok(());
+            };
+        };
+        return #ok(());
+    };
+
+    func handleTransferError(err : Types.TransferError) : Text {
         return switch (err) {
             case (#GenericError(details)) {
                 "Generic error: " # details.message # " (code: " # Nat.toText(details.error_code) # ")";
@@ -253,6 +255,5 @@ actor {
             };
         };
     };
-
 
 };
