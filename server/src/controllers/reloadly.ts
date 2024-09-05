@@ -2,68 +2,75 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
 dotenv.config();
-import { Actor, HttpAgent } from "@dfinity/agent";
+import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent";
+import { _SERVICE } from './rentmase_backend.did';
 
 //@ts-ignore
 const idlFactory = ({ IDL }) => {
+  const TxnStatus = IDL.Variant({
+    'TokensTransfered' : IDL.Null,
+    'Initiated' : IDL.Null,
+    'Completed' : IDL.Null,
+  });
+  const Account = IDL.Record({
+    'owner' : IDL.Principal,
+    'subaccount' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+  });
+  const TransferData = IDL.Record({ 'from' : Account, 'amount' : IDL.Nat });
+  const GiftCardPurchase = IDL.Record({
+    'productId' : IDL.Text,
+    'countryCode' : IDL.Text,
+    'quantity' : IDL.Int,
+    'phoneNumber' : IDL.Text,
+    'amount' : IDL.Text,
+    'recipientEmail' : IDL.Text,
+  });
+  const BillsPayment = IDL.Record({
+    'subscriberAccount' : IDL.Text,
+    'reference' : IDL.Text,
+    'billerId' : IDL.Text,
+    'amount' : IDL.Text,
+    'biller' : IDL.Text,
+  });
+  const AirtimeTopup = IDL.Record({
+    'operator' : IDL.Text,
+    'countryCode' : IDL.Text,
+    'operaterId' : IDL.Text,
+    'phoneNumber' : IDL.Text,
+    'amount' : IDL.Text,
+  });
+  const DataTopup = IDL.Record({
+    'operator' : IDL.Text,
+    'countryCode' : IDL.Text,
+    'operaterId' : IDL.Text,
+    'phoneNumber' : IDL.Text,
+    'amount' : IDL.Text,
+  });
+  const TxnType = IDL.Variant({
+    'GiftCardPurchase' : GiftCardPurchase,
+    'BillsPayment' : BillsPayment,
+    'AirtimeTopup' : AirtimeTopup,
+    'DataTopup' : DataTopup,
+  });
   const Time = IDL.Int;
-  const Reward = IDL.Record({
-    'claimed' : IDL.Bool,
-    'claimedAt' : IDL.Opt(Time),
+  const InternalTxn = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : TxnStatus,
+    'userEmail' : IDL.Text,
+    'transferData' : TransferData,
+    'txnType' : TxnType,
+    'userPrincipal' : IDL.Principal,
     'timestamp' : Time,
-    'amount' : IDL.Nat,
   });
-  const User = IDL.Record({
-    'id' : IDL.Principal,
-    'dob' : IDL.Opt(Time),
-    'referralCode' : IDL.Text,
-    'createdAt' : Time,
-    'referrals' : IDL.Vec(IDL.Principal),
-    'email' : IDL.Text,
-    'lastupdated' : Time,
-    'gender' : IDL.Opt(IDL.Text),
-    'rewards' : IDL.Vec(Reward),
-    'lastName' : IDL.Text,
-    'firstName' : IDL.Text,
+  const Result_1 = IDL.Variant({ 'ok' : InternalTxn, 'err' : IDL.Text });
+  const Rentmase = IDL.Service({
+    'completeTxn' : IDL.Func([IDL.Int], [Result_1], []),
+    'transferTransaction' : IDL.Func([IDL.Int], [Result_1], []),
   });
-  const PublicUser = IDL.Record({
-    'id' : IDL.Principal,
-    'referrals' : IDL.Vec(IDL.Principal),
-    'rewards' : IDL.Vec(Reward),
-    'lastName' : IDL.Text,
-    'firstName' : IDL.Text,
-  });
-  const Result_2 = IDL.Variant({ 'ok' : IDL.Vec(Reward), 'err' : IDL.Text });
-  const Result = IDL.Variant({ 'ok' : User, 'err' : IDL.Text });
-  const Result_1 = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
-  const UserPayload = IDL.Record({
-    'dob' : IDL.Opt(Time),
-    'referralCode' : IDL.Text,
-    'referrerCode' : IDL.Opt(IDL.Text),
-    'email' : IDL.Text,
-    'gender' : IDL.Opt(IDL.Text),
-    'lastName' : IDL.Text,
-    'firstName' : IDL.Text,
-  });
-  const UserUpdatePayload = IDL.Record({
-    'dob' : IDL.Opt(Time),
-    'refferalCode' : IDL.Text,
-    'email' : IDL.Text,
-    'gender' : IDL.Opt(IDL.Text),
-    'lastName' : IDL.Text,
-    'firstName' : IDL.Text,
-  });
-  return IDL.Service({
-    'getAllUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
-    'getPublicUsers' : IDL.Func([], [IDL.Vec(PublicUser)], ['query']),
-    'getUnclaimedRewards' : IDL.Func([], [Result_2], ['query']),
-    'getUser' : IDL.Func([], [Result], ['query']),
-    'isReferralCodeUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
-    'redeemRewards' : IDL.Func([IDL.Principal, IDL.Nat], [Result_1], []),
-    'registerUser' : IDL.Func([UserPayload], [Result], []),
-    'updateProfile' : IDL.Func([UserUpdatePayload], [Result], []),
-  });
+  return Rentmase;
 };
+
+
 
 const getActor = async () => {
 const agent = await HttpAgent.create({
@@ -74,7 +81,7 @@ if (process.env.ENV === 'local') {
   agent.fetchRootKey();
 }
 
-const actor = Actor.createActor(idlFactory, {
+const actor : ActorSubclass<_SERVICE> = Actor.createActor(idlFactory, {
   agent,
   canisterId: process.env.CANISTER_ID,
 });
@@ -83,16 +90,24 @@ return actor;
 
 export const airTimeDataTopUp = async (req: Request, res: Response) => {
   try {
-    const { phoneNumber, amount, countryCode, operatorId, useLocalAmount = false } = req.body;
+    const { phoneNumber, amount, countryCode, operatorId, useLocalAmount = false, txnId } = req.body;
     const accessToken = req.cookies.reloadly_access_token;
     
     if (!accessToken) {
       return res.status(401).json({ error: 'Access token not found' });
     }
 
-    if (!phoneNumber || !amount || !countryCode || !operatorId) {
+    if (!phoneNumber || !amount || !countryCode || !operatorId || !txnId) {
       console.log("phoneNumber", phoneNumber, "amount", amount, "countryCode", countryCode, "operatorId", operatorId);
       return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const actor = await getActor();
+
+    const res1 = await actor.transferTransaction(txnId);
+
+    if ("err" in res1) {
+      return res.status(400).json({ error: res1.err });
     }
 
     const senderPhone = {
@@ -122,6 +137,17 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       }
     );
 
+    console.log("response", response);
+
+    if (response.data.error) {
+      return res.status(400).json({ error: response.data.error });
+    }
+
+    const res3 = await actor.completeTxn(txnId);
+
+    if ("err" in res3) {
+      return res.status(400).json({ error: res3.err });
+    }
     res.json(response.data);
   } catch (error) {
     console.error('Error processing airtime top-up:', error);
@@ -211,38 +237,34 @@ export const getCountryOperators = async (req: Request, res: Response) => {
 }
 
 export const getAllOperators = async (req: Request, res: Response) => {
-  const actor = await getActor();
-  const users = await actor.getPublicUsers();
-  console.log("users", users);
-  // res.json(users);
-  // try {
-  //   const accessToken = req.cookies.reloadly_access_token;
+  try {
+    const accessToken = req.cookies.reloadly_access_token;
     
-  //   if (!accessToken) {
-  //     return res.status(401).json({ error: 'Access token not found' });
-  //   }
+    if (!accessToken) {
+      return res.status(401).json({ error: 'Access token not found' });
+    }
 
-  //   const response = await axios.get(
-  //     'https://topups-sandbox.reloadly.com/operators',
-  //     {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     }
-  //   );
+    const response = await axios.get(
+      'https://topups-sandbox.reloadly.com/operators',
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
-  //   res.json(response.data);
-  // } catch (error) {
-  //   console.error('Error getting operators:', error);
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error getting operators:', error);
 
-  //   if (error.response) {
-  //     res.status(error.response.status).json({ error: error.response.data.message });
-  //   } else if (error.request) {
-  //     res.status(500).json({ error: 'No response received from Reloadly API' });
-  //   } else {
-  //     res.status(500).json({ error: 'An unexpected error occurred' });
-  //   }
-  // }
+    if (error.response) {
+      res.status(error.response.status).json({ error: error.response.data.message });
+    } else if (error.request) {
+      res.status(500).json({ error: 'No response received from Reloadly API' });
+    } else {
+      res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
 }
 
