@@ -107,6 +107,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     const res1 = await actor.transferTransaction(txnId);
 
     if ("err" in res1) {
+      console.log("res1", res1);
       return res.status(400).json({ error: res1.err });
     }
 
@@ -146,6 +147,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     const res3 = await actor.completeTxn(txnId);
 
     if ("err" in res3) {
+      console.log("res3", res3);
       return res.status(400).json({ error: res3.err });
     }
     res.json(response.data);
