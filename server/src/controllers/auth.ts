@@ -12,7 +12,7 @@ const getReloadlyAccessToken = async () => {
         client_id: process.env.RELOADLY_CLIENT_ID,
         client_secret: process.env.RELOADLY_CLIENT_SECRET,
         grant_type: 'client_credentials',
-        audience: 'https://topups-sandbox.reloadly.com',
+        audience: 'https://giftcards-sandbox.reloadly.com',
       },
       {
         headers: { 'Content-Type': 'application/json' },
