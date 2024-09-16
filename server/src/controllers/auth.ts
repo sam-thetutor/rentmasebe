@@ -1,10 +1,10 @@
 
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import "dotenv/config";
 import axios from "axios";
 
 
-const getReloadlyAccessToken = async () => {
+const getReloadlyAccessToken = async (audience: string) => {
   try {
     const response = await axios.post(
       'https://auth.reloadly.com/oauth/token',
@@ -12,7 +12,7 @@ const getReloadlyAccessToken = async () => {
         client_id: process.env.RELOADLY_CLIENT_ID,
         client_secret: process.env.RELOADLY_CLIENT_SECRET,
         grant_type: 'client_credentials',
-        audience: 'https://giftcards-sandbox.reloadly.com',
+        audience: `https://${audience}.reloadly.com`,
       },
       {
         headers: { 'Content-Type': 'application/json' },
@@ -27,7 +27,8 @@ const getReloadlyAccessToken = async () => {
 
 export const getAccessToken = async (req: Request, res: Response) => {
   try {
-    const accessToken = await getReloadlyAccessToken();
+    const audience = req.body.audience;
+    const accessToken = await getReloadlyAccessToken(audience);
     res.cookie('reloadly_access_token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', 
