@@ -267,7 +267,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     const {
       countryCode,
       productId,
-      amount,
+      unitPrice,
       recipientEmail,
       recipientPhone,
       quantity,
@@ -283,8 +283,8 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     if (
       !countryCode ||
       !productId ||
-      !amount ||
       !quantity ||
+      !unitPrice ||
       !recipientPhone ||
       !recipientEmail ||
       !senderName ||
@@ -305,6 +305,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       productId: productId,
       countryCode: countryCode,
       quantity: quantity,
+      unitPrice: unitPrice,
       customIdentifier: "rentmase",
       recipientEmail: recipientEmail,
       recipientPhoneDetails: {

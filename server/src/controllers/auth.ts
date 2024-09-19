@@ -35,7 +35,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
       maxAge: 60 * 60 * 1000, 
     });
 
-    res.json({ message: "Authenticarted" });
+    res.json({ message: "Authenticated" });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch access token' });
   }
