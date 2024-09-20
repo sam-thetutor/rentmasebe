@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "./auth";
-import purchases from "./purchases";
+import purchases from "./services";
 const router = Router();
 
 export default (): Router => {

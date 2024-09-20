@@ -1,6 +1,8 @@
 
-import { airTimeDataTopUp, buyGiftCard, getAllOperators, getCountryGiftCards, getCountryOperators, getNumberOperator } from "../controllers/reloadly";
+import {  buyGiftCard, getCountryGiftCards } from "../controllers/giftcards";
 import { Router } from "express";
+import { airTimeDataTopUp, getAllOperators, getCountryOperators, getNumberOperator } from '../controllers/airtime';
+import { getBillers, payBills } from "../controllers/bills";
 
 export default (router: Router) => {
   router.post("/topup-airtime", airTimeDataTopUp);
@@ -9,4 +11,7 @@ export default (router: Router) => {
   router.get("/number-operator", getNumberOperator);
   router.get("/country-giftcards", getCountryGiftCards);
   router.post("/buy-giftcard", buyGiftCard);
+  router.get("/billers", getBillers);
+  router.post("/pay-bill", payBills);
+
 };
