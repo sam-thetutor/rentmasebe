@@ -12,7 +12,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://rentmase.xyz",
+      "https://tf3xr-miaaa-aaaal-qmtba-cai.icp0.io",
       "http://localhost:3000", 
     ],
     credentials: true, 
