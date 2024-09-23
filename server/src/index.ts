@@ -52,7 +52,7 @@ app.get("/api/test-get", (req, res) => {
 });
 
 app.post("/api/test-post", (req, res) => {
-  res.json({ message: "This GET route is working fine!" });
+  res.json({ message: "This POST route is working fine!" });
 });
 
 app.use("/api", router());
