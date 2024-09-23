@@ -15,6 +15,7 @@ app.use(
       "https://tf3xr-miaaa-aaaal-qmtba-cai.icp0.io",
       "http://localhost:3000", 
     ],
+    methods: ['GET', 'POST'],
     credentials: true, 
   })
 );
