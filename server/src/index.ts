@@ -22,8 +22,8 @@ app.use(
 
 app.use(compression());
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 5000;
 const HOST = "0.0.0.0";
@@ -46,5 +46,9 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running....");
   });
 }
+
+app.get("/api/test-get", (req, res) => {
+  res.json({ message: "This GET route is working fine!" });
+});
 
 app.use("/api", router());
