@@ -51,4 +51,8 @@ app.get("/api/test-get", (req, res) => {
   res.json({ message: "This GET route is working fine!" });
 });
 
+app.post("/api/test-post", (req, res) => {
+  res.json({ message: "This GET route is working fine!" });
+});
+
 app.use("/api", router());
