@@ -22,8 +22,8 @@ app.use(
 
 app.use(compression());
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 5000;
 const HOST = "0.0.0.0";
