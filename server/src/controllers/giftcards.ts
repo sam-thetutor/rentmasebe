@@ -7,8 +7,8 @@ dotenv.config();
 export const getCountryGiftCards = async (req: Request, res: Response) => {
   try {
     const { countryCode } = req.query;
-    console.log("Reqest access token", req)
     const accessToken = req.cookies.reloadly_access_token;
+    console.log("Reqest cookies", req.cookies)
 
     if (!accessToken) {
       return res.status(401).json({ error: "Access token not found" });
