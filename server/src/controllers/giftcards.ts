@@ -7,6 +7,7 @@ dotenv.config();
 
 export const getCountryGiftCards = async (req: Request, res: Response) => {
   console.log("End point hit");
+  res.json({ message: "Gift cards endpoint hit" });
   // try {
   //   const { countryCode } = req.query;
   //   const accessToken = req.cookies.reloadly_access_token;
