@@ -1,5 +1,4 @@
 import express from "express";
-import path from "path";
 import http from "http";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -34,25 +33,5 @@ server.listen({ port: PORT, host: HOST }, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-if (process.env.NODE_ENV === "production") {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, "/client/dist")));
-
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"))
-  );
-} else {
-  app.get("/", (req, res) => {
-    res.send("API is running....");
-  });
-}
-
-app.get("/api/test-get", (req, res) => {
-  res.json({ message: "This GET route is working fine!" });
-});
-
-app.post("/api/test-post", (req, res) => {
-  res.json({ message: "This POST route is working fine!" });
-});
 
 app.use("/api", router());

@@ -4,46 +4,43 @@ import { Request, Response } from "express";
 import { getActor } from "./actor";
 dotenv.config();
 
-
 export const getCountryGiftCards = async (req: Request, res: Response) => {
-  console.log("End point hit");
-  res.json({ message: "Gift cards endpoint hit" });
-  // try {
-  //   const { countryCode } = req.query;
-  //   const accessToken = req.cookies.reloadly_access_token;
+  try {
+    const { countryCode } = req.query;
+    const accessToken = req.cookies.reloadly_access_token;
 
-  //   if (!accessToken) {
-  //     return res.status(401).json({ error: "Access token not found" });
-  //   }
+    if (!accessToken) {
+      return res.status(401).json({ error: "Access token not found" });
+    }
 
-  //   if (!countryCode) {
-  //     return res.status(400).json({ error: "Missing required parameters" });
-  //   }
+    if (!countryCode) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
 
-  //   const response = await axios.get(
-  //     `https://giftcards-sandbox.reloadly.com/countries/${countryCode}/products`,
-  //     {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     }
-  //   );
+    const response = await axios.get(
+      `https://giftcards-sandbox.reloadly.com/countries/${countryCode}/products`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
 
-  //   res.json(response.data);
-  // } catch (error) {
-  //   console.error("Error getting gift cards:", error);
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error getting gift cards:", error);
 
-  //   if (error.response) {
-  //     res
-  //       .status(error.response.status)
-  //       .json({ error: error.response.data.message });
-  //   } else if (error.request) {
-  //     res.status(500).json({ error: "No response received from Reloadly API" });
-  //   } else {
-  //     res.status(500).json({ error: "An unexpected error occurred" });
-  //   }
-  // }
+    if (error.response) {
+      res
+        .status(error.response.status)
+        .json({ error: error.response.data.message });
+    } else if (error.request) {
+      res.status(500).json({ error: "No response received from Reloadly API" });
+    } else {
+      res.status(500).json({ error: "An unexpected error occurred" });
+    }
+  }
 };
 
 export const buyGiftCard = async (req: Request, res: Response) => {
