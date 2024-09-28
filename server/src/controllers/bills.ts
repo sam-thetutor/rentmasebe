@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getActor } from "./actor";
 import axios from "axios";
+import { audience } from "../constants";
 
 export const payBills = async (req: Request, res: Response) => {
   try {
@@ -11,6 +12,7 @@ export const payBills = async (req: Request, res: Response) => {
       referenceId,
       additionalInfo,
       txnId,
+      cashback,
     } = req.body;
     const accessToken = req.cookies.reloadly_access_token;
 
@@ -46,7 +48,7 @@ export const payBills = async (req: Request, res: Response) => {
     };
 
     const response = await axios.post(
-      "https://bills-sandbox.reloadly.com/pay",
+      `https://bills${audience}.reloadly.com/pay`,
       payload,
       {
         headers: {
@@ -55,9 +57,19 @@ export const payBills = async (req: Request, res: Response) => {
         },
       }
     );
+    
 
     if (response.data.error) {
       return res.status(400).json({ error: response.data.error });
+    }
+
+    if (cashback) {
+      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
+      if ("err" in _res) {
+        return res.status(400).json({ error: _res.err });
+      } else {
+        return res.json(response.data);
+      }
     }
 
     const res3 = await actor.completeTxn(BigInt(txnId));
@@ -93,7 +105,7 @@ export const getBillers = async (req: Request, res: Response) => {
     }
 
     const response = await axios.get(
-      `https://utilities-sandbox.reloadly.com/billers?id=12&name=Eko%20Electricity&type=ELECTRICITY_BILL_PAYMENT&serviceType=PREPAID&countryISOCode=KE&page=1&size=10`,
+      `https://utilities${audience}.reloadly.com/billers?id=12&name=Eko%20Electricity&type=ELECTRICITY_BILL_PAYMENT&serviceType=PREPAID&countryISOCode=KE&page=1&size=10`,
       {
         headers: {
           "Content-Type": "application/json",

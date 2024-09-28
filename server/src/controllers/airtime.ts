@@ -2,6 +2,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
 import { getActor } from "./actor";
+import { audience } from "../constants";
 dotenv.config();
 
 export const airTimeDataTopUp = async (req: Request, res: Response) => {
@@ -13,6 +14,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       operatorId,
       useLocalAmount = false,
       txnId,
+      cashback
     } = req.body;
     const accessToken = req.cookies.reloadly_access_token;
 
@@ -21,16 +23,6 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     }
 
     if (!phoneNumber || !amount || !countryCode || !operatorId || !txnId) {
-      console.log(
-        "phoneNumber",
-        phoneNumber,
-        "amount",
-        amount,
-        "countryCode",
-        countryCode,
-        "operatorId",
-        operatorId
-      );
       return res.status(400).json({ error: "Missing required parameters" });
     }
 
@@ -59,7 +51,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     };
 
     const response = await axios.post(
-      "https://topups-sandbox.reloadly.com/topups",
+      `https://topups${audience}.reloadly.com/topups`,
       payload,
       {
         headers: {
@@ -70,6 +62,15 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     );
     if (response.data.error) {
       return res.status(400).json({ error: response.data.error });
+    }
+
+    if (cashback) {
+      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
+      if ("err" in _res) {
+        return res.status(400).json({ error: _res.err });
+      } else {
+        return res.json(response.data);
+      }
     }
 
     const res3 = await actor.completeTxn(BigInt(txnId));
@@ -107,7 +108,7 @@ export const getNumberOperator = async (req: Request, res: Response) => {
     }
 
     const response = await axios.get(
-      `https://topups-sandbox.reloadly.com/operators/auto-detect/phone/${phoneNumber}/countries/${iso}`,
+      `https://topups${audience}.reloadly.com/operators/auto-detect/phone/${phoneNumber}/countries/${iso}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -146,7 +147,7 @@ export const getCountryOperators = async (req: Request, res: Response) => {
     }
 
     const response = await axios.get(
-      `https://topups-sandbox.reloadly.com/operators/countries/${countryCode}`,
+      `https://topups${audience}.reloadly.com/operators/countries/${countryCode}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +181,7 @@ export const getAllOperators = async (req: Request, res: Response) => {
     }
 
     const response = await axios.get(
-      "https://topups-sandbox.reloadly.com/operators",
+      "https://topups${audience}.reloadly.com/operators",
       {
         headers: {
           "Content-Type": "application/json",

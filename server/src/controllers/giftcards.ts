@@ -2,13 +2,13 @@ import axios from "axios";
 import dotenv from "dotenv";
 import { Request, Response } from "express";
 import { getActor } from "./actor";
+import { audience } from "../constants";
 dotenv.config();
 
 export const getCountryGiftCards = async (req: Request, res: Response) => {
   try {
     const { countryCode } = req.query;
     const accessToken = req.cookies.reloadly_access_token;
-    console.log("Reqest cookies", req.cookies)
 
     if (!accessToken) {
       return res.status(401).json({ error: "Access token not found" });
@@ -19,7 +19,7 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
     }
 
     const response = await axios.get(
-      `https://giftcards-sandbox.reloadly.com/countries/${countryCode}/products`,
+      `https://giftcards${audience}.reloadly.com/countries/${countryCode}/products`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -52,9 +52,11 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       unitPrice,
       recipientEmail,
       recipientPhone,
+      customIdentifier,
       quantity,
       senderName,
       txnId,
+      cashback,
     } = req.body;
     const accessToken = req.cookies.reloadly_access_token;
 
@@ -76,7 +78,6 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     }
 
     const actor = await getActor();
-
     const res1 = await actor.transferTransaction(BigInt(txnId));
 
     if ("err" in res1) {
@@ -88,7 +89,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       countryCode: countryCode,
       quantity: quantity,
       unitPrice: unitPrice,
-      customIdentifier: "rentmase",
+      customIdentifier,
       recipientEmail: recipientEmail,
       recipientPhoneDetails: {
         countryCode: countryCode,
@@ -97,7 +98,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     };
 
     const response = await axios.post(
-      "https://giftcards-sandbox.reloadly.com/orders",
+      `https://giftcards${audience}.reloadly.com/orders`,
       payload,
       {
         headers: {
@@ -109,6 +110,16 @@ export const buyGiftCard = async (req: Request, res: Response) => {
 
     if (response.data.error) {
       return res.status(400).json({ error: response.data.error });
+    }
+
+    if (cashback) {
+      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
+      if ("err" in _res) {
+        console.log("Error cashbacking txn:", _res.err);
+        return res.status(400).json({ error: _res.err });
+      } else {
+        return res.json(response.data);
+      }
     }
 
     const res3 = await actor.completeTxn(BigInt(txnId));
