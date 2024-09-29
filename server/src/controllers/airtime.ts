@@ -27,11 +27,10 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     }
 
     const actor = await getActor();
-
     const res1 = await actor.transferTransaction(BigInt(txnId));
 
     if ("err" in res1) {
-      return res.status(400).json({ error: res1.err });
+      return res.status(400).json({ error: `Failed to transfer txn tokens: ${res1.err}`});
     }
 
     const senderPhone = {
@@ -61,13 +60,19 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       }
     );
     if (response.data.error) {
-      return res.status(400).json({ error: response.data.error });
+      return res.status(400).json({ error: 
+        `Failed to top-up airtime: ${response.data.error}`
+       });
     }
+
+    console.log("cashback", cashback);
 
     if (cashback) {
       const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
       if ("err" in _res) {
-        return res.status(400).json({ error: _res.err });
+        return res.status(400).json({ error: 
+          `Failed to cashback transaction: ${_res.err}`
+        });
       } else {
         return res.json(response.data);
       }
@@ -75,8 +80,11 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
 
     const res3 = await actor.completeTxn(BigInt(txnId));
 
+
     if ("err" in res3) {
-      return res.status(400).json({ error: res3.err });
+      return res.status(400).json({ 
+        error: `Failed to complete transaction: ${res3.err}`
+       });
     }
     res.json(response.data);
   } catch (error) {
@@ -158,8 +166,6 @@ export const getCountryOperators = async (req: Request, res: Response) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error("Error getting operators:", error);
-
     if (error.response) {
       res
         .status(error.response.status)

@@ -3,6 +3,7 @@ import {  buyGiftCard, getCountryGiftCards } from "../controllers/giftcards";
 import { Router } from "express";
 import { airTimeDataTopUp, getAllOperators, getCountryOperators, getNumberOperator } from '../controllers/airtime';
 import { getBillers, payBills } from "../controllers/bills";
+import { getPairExchangeRate } from "../controllers/currencyRates";
 
 export default (router: Router) => {
   router.post("/topup-airtime", airTimeDataTopUp);
@@ -13,4 +14,5 @@ export default (router: Router) => {
   router.post("/buy-giftcard", buyGiftCard);
   router.get("/billers", getBillers);
   router.post("/pay-bill", payBills);
+  router.get("/pair-exchange-rate", getPairExchangeRate);
 };
