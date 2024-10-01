@@ -7,8 +7,7 @@ dotenv.config();
 
 export const getCountryGiftCards = async (req: Request, res: Response) => {
   try {
-    const { countryCode } = req.query;
-    console.log("countryCode", countryCode);
+    const { countryCode } = req.query; 
     const accessToken = req.cookies.reloadly_access_token;
 
     if (!accessToken) {

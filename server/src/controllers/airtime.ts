@@ -65,8 +65,6 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
        });
     }
 
-    console.log("cashback", cashback);
-
     if (cashback) {
       const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
       if ("err" in _res) {
