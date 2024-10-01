@@ -14,8 +14,9 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       operatorId,
       useLocalAmount = false,
       txnId,
-      cashback
+      cashback,
     } = req.body;
+    
     const accessToken = req.cookies.reloadly_access_token;
 
     if (!accessToken) {
@@ -23,14 +24,20 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     }
 
     if (!phoneNumber || !amount || !countryCode || !operatorId || !txnId) {
-      return res.status(400).json({ error: "Missing required parameters" });
+      return res
+        .status(400)
+        .json({
+          error: `Missing required parameters ${phoneNumber} ${amount} ${countryCode} ${operatorId} ${txnId}`,
+        });
     }
 
     const actor = await getActor();
     const res1 = await actor.transferTransaction(BigInt(txnId));
 
     if ("err" in res1) {
-      return res.status(400).json({ error: `Failed to transfer txn tokens: ${res1.err}`});
+      return res
+        .status(400)
+        .json({ error: `Failed to transfer txn tokens: ${res1.err}` });
     }
 
     const senderPhone = {
@@ -59,30 +66,31 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
         },
       }
     );
+
+    console.log("response", response.data);
     if (response.data.error) {
-      return res.status(400).json({ error: 
-        `Failed to top-up airtime: ${response.data.error}`
-       });
+      return res
+        .status(400)
+        .json({ error: `Failed to top-up airtime: ${response.data.error}` });
     }
 
     if (cashback) {
-      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
+      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, response.data.transactionId);
       if ("err" in _res) {
-        return res.status(400).json({ error: 
-          `Failed to cashback transaction: ${_res.err}`
-        });
+        return res
+          .status(400)
+          .json({ error: `Failed to cashback transaction: ${_res.err}` });
       } else {
         return res.json(response.data);
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId));
-
+    const res3 = await actor.completeTxn(BigInt(txnId), response.data.transactionId);
 
     if ("err" in res3) {
-      return res.status(400).json({ 
-        error: `Failed to complete transaction: ${res3.err}`
-       });
+      return res.status(400).json({
+        error: `Failed to complete transaction: ${res3.err}`,
+      });
     }
     res.json(response.data);
   } catch (error) {

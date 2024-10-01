@@ -113,7 +113,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     }
 
     if (cashback) {
-      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage);
+      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, response.data.transactionId);
       if ("err" in _res) {
         console.log("Error cashbacking txn:", _res.err);
         return res.status(400).json({ error: _res.err });
@@ -122,7 +122,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId));
+    const res3 = await actor.completeTxn(BigInt(txnId), response.data.transactionId);
 
     if ("err" in res3) {
       return res.status(400).json({ error: res3.err });

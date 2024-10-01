@@ -42,6 +42,7 @@ export interface InternalTxn {
   'transferData' : TransferData,
   'txnType' : TxnType,
   'userPrincipal' : Principal,
+  'reloadlyTxnId' : [] | [string],
   'timestamp' : Time,
 }
 export interface PublicUser {
@@ -57,8 +58,8 @@ export interface ReferralReward {
   'amount' : bigint,
 }
 export interface Rentmase {
-  'cashbackTxn' : ActorMethod<[bigint, number], Result_2>,
-  'completeTxn' : ActorMethod<[bigint], Result_1>,
+  'cashbackTxn' : ActorMethod<[bigint, number, string], Result_2>,
+  'completeTxn' : ActorMethod<[bigint, string], Result_1>,
   'getAllUsers' : ActorMethod<[], Array<User>>,
   'getPublicUsers' : ActorMethod<[], Array<PublicUser>>,
   'getRewards' : ActorMethod<[], Array<Rewards>>,
@@ -67,6 +68,7 @@ export interface Rentmase {
   'getUserRewards' : ActorMethod<[], Result_3>,
   'intiateTxn' : ActorMethod<[TxnPayload], Result_1>,
   'isReferralCodeUnique' : ActorMethod<[string], boolean>,
+  'isUserNameUnique' : ActorMethod<[string], boolean>,
   'redeemRewards' : ActorMethod<[Principal, bigint], Result_2>,
   'registerUser' : ActorMethod<[UserPayload], Result>,
   'transferTransaction' : ActorMethod<[bigint], Result_1>,
@@ -86,8 +88,8 @@ export type RewardType = { 'SocialShare' : SocialShareReward } |
   { 'Signup' : SignupReward } |
   { 'Referral' : ReferralReward };
 export interface Rewards {
-  'userName' : string,
   'created' : Time,
+  'username' : string,
   'balance' : bigint,
   'user' : Principal,
   'rewards' : Array<RewardType>,
@@ -113,6 +115,7 @@ export interface User {
   'id' : Principal,
   'dob' : [] | [Time],
   'referralCode' : string,
+  'username' : string,
   'createdAt' : Time,
   'referrals' : Array<Principal>,
   'email' : string,
@@ -124,6 +127,7 @@ export interface User {
 export interface UserPayload {
   'dob' : [] | [Time],
   'referralCode' : string,
+  'username' : string,
   'referrerCode' : [] | [string],
   'email' : string,
   'gender' : [] | [string],
@@ -133,6 +137,7 @@ export interface UserPayload {
 export interface UserUpdatePayload {
   'dob' : [] | [Time],
   'refferalCode' : string,
+  'username' : string,
   'email' : string,
   'gender' : [] | [string],
   'lastName' : string,

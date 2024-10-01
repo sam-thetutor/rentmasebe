@@ -54,6 +54,7 @@ export const idlFactory = ({ IDL }) => {
     'transferData' : TransferData,
     'txnType' : TxnType,
     'userPrincipal' : IDL.Principal,
+    'reloadlyTxnId' : IDL.Opt(IDL.Text),
     'timestamp' : Time,
   });
   const Result_1 = IDL.Variant({ 'ok' : InternalTxn, 'err' : IDL.Text });
@@ -61,6 +62,7 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Principal,
     'dob' : IDL.Opt(Time),
     'referralCode' : IDL.Text,
+    'username' : IDL.Text,
     'createdAt' : Time,
     'referrals' : IDL.Vec(IDL.Principal),
     'email' : IDL.Text,
@@ -94,8 +96,8 @@ export const idlFactory = ({ IDL }) => {
     'Referral' : ReferralReward,
   });
   const Rewards = IDL.Record({
-    'userName' : IDL.Text,
     'created' : Time,
+    'username' : IDL.Text,
     'balance' : IDL.Nat,
     'user' : IDL.Principal,
     'rewards' : IDL.Vec(RewardType),
@@ -111,6 +113,7 @@ export const idlFactory = ({ IDL }) => {
   const UserPayload = IDL.Record({
     'dob' : IDL.Opt(Time),
     'referralCode' : IDL.Text,
+    'username' : IDL.Text,
     'referrerCode' : IDL.Opt(IDL.Text),
     'email' : IDL.Text,
     'gender' : IDL.Opt(IDL.Text),
@@ -120,14 +123,15 @@ export const idlFactory = ({ IDL }) => {
   const UserUpdatePayload = IDL.Record({
     'dob' : IDL.Opt(Time),
     'refferalCode' : IDL.Text,
+    'username' : IDL.Text,
     'email' : IDL.Text,
     'gender' : IDL.Opt(IDL.Text),
     'lastName' : IDL.Text,
     'firstName' : IDL.Text,
   });
   const Rentmase = IDL.Service({
-    'cashbackTxn' : IDL.Func([IDL.Nat, IDL.Float64], [Result_2], []),
-    'completeTxn' : IDL.Func([IDL.Int], [Result_1], []),
+    'cashbackTxn' : IDL.Func([IDL.Nat, IDL.Float64, IDL.Text], [Result_2], []),
+    'completeTxn' : IDL.Func([IDL.Int, IDL.Text], [Result_1], []),
     'getAllUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
     'getPublicUsers' : IDL.Func([], [IDL.Vec(PublicUser)], ['query']),
     'getRewards' : IDL.Func([], [IDL.Vec(Rewards)], ['query']),
@@ -136,6 +140,7 @@ export const idlFactory = ({ IDL }) => {
     'getUserRewards' : IDL.Func([], [Result_3], ['query']),
     'intiateTxn' : IDL.Func([TxnPayload], [Result_1], []),
     'isReferralCodeUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+    'isUserNameUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'redeemRewards' : IDL.Func([IDL.Principal, IDL.Nat], [Result_2], []),
     'registerUser' : IDL.Func([UserPayload], [Result], []),
     'transferTransaction' : IDL.Func([IDL.Int], [Result_1], []),
@@ -143,3 +148,5 @@ export const idlFactory = ({ IDL }) => {
   });
   return Rentmase;
 };
+
+
