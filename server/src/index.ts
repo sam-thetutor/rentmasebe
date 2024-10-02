@@ -11,7 +11,7 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://tf3xr-miaaa-aaaal-qmtba-cai.icp0.io",
+      "https://55e7x-xyaaa-aaaal-qmzsq-cai.icp0.io",
       "http://localhost:3000", 
     ],
     methods: ['GET', 'POST'],
