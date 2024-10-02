@@ -7,7 +7,7 @@ dotenv.config();
 
 export const getCountryGiftCards = async (req: Request, res: Response) => {
   try {
-    const { countryCode } = req.query; 
+    const { countryCode } = req.query;
     const accessToken = req.cookies.reloadly_access_token;
 
     if (!accessToken) {
@@ -112,8 +112,14 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       return res.status(400).json({ error: response.data.error });
     }
 
+    const reloadlyTxnId = String(response.data.transactionId);
+
     if (cashback) {
-      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, response.data.transactionId);
+      const _res = await actor.cashbackTxn(
+        BigInt(txnId),
+        cashback.percentage,
+        reloadlyTxnId
+      );
       if ("err" in _res) {
         console.log("Error cashbacking txn:", _res.err);
         return res.status(400).json({ error: _res.err });
@@ -122,7 +128,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId), response.data.transactionId);
+    const res3 = await actor.completeTxn(BigInt(txnId), reloadlyTxnId);
 
     if ("err" in res3) {
       return res.status(400).json({ error: res3.err });

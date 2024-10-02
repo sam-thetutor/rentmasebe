@@ -67,15 +67,17 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       }
     );
 
-    console.log("response", response.data);
     if (response.data.error) {
       return res
         .status(400)
         .json({ error: `Failed to top-up airtime: ${response.data.error}` });
     }
 
+    
+    const reloadlyTxnId = String(response.data.transactionId);
+
     if (cashback) {
-      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, response.data.transactionId);
+      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, reloadlyTxnId);
       if ("err" in _res) {
         return res
           .status(400)
@@ -85,7 +87,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId), response.data.transactionId);
+    const res3 = await actor.completeTxn(BigInt(txnId), reloadlyTxnId);
 
     if ("err" in res3) {
       return res.status(400).json({
