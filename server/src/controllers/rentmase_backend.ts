@@ -2,6 +2,7 @@
 export const idlFactory = ({ IDL }) => {
   const Result_2 = IDL.Variant({ 'ok' : IDL.Null, 'err' : IDL.Text });
   const TxnStatus = IDL.Variant({
+    'FailedNRefunded' : IDL.Null,
     'TokensTransfered' : IDL.Null,
     'Initiated' : IDL.Null,
     'Completed' : IDL.Null,
@@ -47,6 +48,10 @@ export const idlFactory = ({ IDL }) => {
     'DataTopup' : DataTopup,
   });
   const Time = IDL.Int;
+  const Cashback = IDL.Record({
+    'amount' : IDL.Nat,
+    'percentage' : IDL.Float64,
+  });
   const InternalTxn = IDL.Record({
     'id' : IDL.Nat,
     'status' : TxnStatus,
@@ -56,6 +61,7 @@ export const idlFactory = ({ IDL }) => {
     'userPrincipal' : IDL.Principal,
     'reloadlyTxnId' : IDL.Opt(IDL.Text),
     'timestamp' : Time,
+    'cashback' : IDL.Opt(Cashback),
   });
   const Result_1 = IDL.Variant({ 'ok' : InternalTxn, 'err' : IDL.Text });
   const User = IDL.Record({
@@ -71,6 +77,15 @@ export const idlFactory = ({ IDL }) => {
     'lastName' : IDL.Text,
     'firstName' : IDL.Text,
   });
+  const Product = IDL.Variant({
+    'GiftCardPurchase' : IDL.Null,
+    'BillsPayment' : IDL.Null,
+    'AirtimeTopup' : IDL.Null,
+    'DataTopup' : IDL.Null,
+  });
+  const CashbackType = IDL.Opt(
+    IDL.Record({ 'products' : IDL.Vec(Product), 'percentage' : IDL.Float64 })
+  );
   const PublicUser = IDL.Record({
     'id' : IDL.Principal,
     'referrals' : IDL.Vec(IDL.Principal),
@@ -109,6 +124,7 @@ export const idlFactory = ({ IDL }) => {
     'userEmail' : IDL.Text,
     'transferAmount' : IDL.Nat,
     'txnType' : TxnType,
+    'cashback' : IDL.Opt(Cashback),
   });
   const UserPayload = IDL.Record({
     'dob' : IDL.Opt(Time),
@@ -133,6 +149,7 @@ export const idlFactory = ({ IDL }) => {
     'cashbackTxn' : IDL.Func([IDL.Nat, IDL.Float64, IDL.Text], [Result_2], []),
     'completeTxn' : IDL.Func([IDL.Int, IDL.Text], [Result_1], []),
     'getAllUsers' : IDL.Func([], [IDL.Vec(User)], ['query']),
+    'getCashback' : IDL.Func([], [CashbackType], ['query']),
     'getPublicUsers' : IDL.Func([], [IDL.Vec(PublicUser)], ['query']),
     'getRewards' : IDL.Func([], [IDL.Vec(Rewards)], ['query']),
     'getTxnsByEmail' : IDL.Func([IDL.Text], [IDL.Vec(InternalTxn)], ['query']),
@@ -142,7 +159,9 @@ export const idlFactory = ({ IDL }) => {
     'isReferralCodeUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'isUserNameUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'redeemRewards' : IDL.Func([IDL.Principal, IDL.Nat], [Result_2], []),
+    'refundFailedTxn' : IDL.Func([IDL.Int], [Result_1], []),
     'registerUser' : IDL.Func([UserPayload], [Result], []),
+    'setCashback' : IDL.Func([CashbackType], [], []),
     'transferTransaction' : IDL.Func([IDL.Int], [Result_1], []),
     'updateProfile' : IDL.Func([UserUpdatePayload], [Result], []),
   });

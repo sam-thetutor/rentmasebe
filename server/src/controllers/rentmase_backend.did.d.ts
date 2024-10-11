@@ -20,6 +20,10 @@ export interface BillsPayment {
   'amount' : string,
   'biller' : string,
 }
+export interface Cashback { 'amount' : bigint, 'percentage' : number }
+export type CashbackType = [] | [
+  { 'products' : Array<Product>, 'percentage' : number }
+];
 export interface DataTopup {
   'operator' : string,
   'countryCode' : string,
@@ -44,7 +48,12 @@ export interface InternalTxn {
   'userPrincipal' : Principal,
   'reloadlyTxnId' : [] | [string],
   'timestamp' : Time,
+  'cashback' : [] | [Cashback],
 }
+export type Product = { 'GiftCardPurchase' : null } |
+  { 'BillsPayment' : null } |
+  { 'AirtimeTopup' : null } |
+  { 'DataTopup' : null };
 export interface PublicUser {
   'id' : Principal,
   'referrals' : Array<Principal>,
@@ -61,6 +70,7 @@ export interface Rentmase {
   'cashbackTxn' : ActorMethod<[bigint, number, string], Result_2>,
   'completeTxn' : ActorMethod<[bigint, string], Result_1>,
   'getAllUsers' : ActorMethod<[], Array<User>>,
+  'getCashback' : ActorMethod<[], CashbackType>,
   'getPublicUsers' : ActorMethod<[], Array<PublicUser>>,
   'getRewards' : ActorMethod<[], Array<Rewards>>,
   'getTxnsByEmail' : ActorMethod<[string], Array<InternalTxn>>,
@@ -70,7 +80,9 @@ export interface Rentmase {
   'isReferralCodeUnique' : ActorMethod<[string], boolean>,
   'isUserNameUnique' : ActorMethod<[string], boolean>,
   'redeemRewards' : ActorMethod<[Principal, bigint], Result_2>,
+  'refundFailedTxn' : ActorMethod<[bigint], Result_1>,
   'registerUser' : ActorMethod<[UserPayload], Result>,
+  'setCashback' : ActorMethod<[CashbackType], undefined>,
   'transferTransaction' : ActorMethod<[bigint], Result_1>,
   'updateProfile' : ActorMethod<[UserUpdatePayload], Result>,
 }
@@ -103,8 +115,10 @@ export interface TxnPayload {
   'userEmail' : string,
   'transferAmount' : bigint,
   'txnType' : TxnType,
+  'cashback' : [] | [Cashback],
 }
-export type TxnStatus = { 'TokensTransfered' : null } |
+export type TxnStatus = { 'FailedNRefunded' : null } |
+  { 'TokensTransfered' : null } |
   { 'Initiated' : null } |
   { 'Completed' : null };
 export type TxnType = { 'GiftCardPurchase' : GiftCardPurchase } |

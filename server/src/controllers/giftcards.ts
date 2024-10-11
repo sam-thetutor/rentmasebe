@@ -109,6 +109,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     );
 
     if (response.data.error) {
+      await actor.refundFailedTxn(BigInt(txnId));
       return res.status(400).json({ error: response.data.error });
     }
 
