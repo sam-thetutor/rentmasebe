@@ -68,6 +68,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     );
 
     if (response.data.error) {
+      await actor.refundFailedTxn(BigInt(txnId));
       return res
         .status(400)
         .json({ error: `Failed to top-up airtime: ${response.data.error}` });

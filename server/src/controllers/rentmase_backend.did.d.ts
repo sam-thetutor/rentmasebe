@@ -8,16 +8,14 @@ export interface Account {
 }
 export interface AirtimeTopup {
   'operator' : string,
-  'countryCode' : string,
+  'more' : PuerchaseTypeField,
   'operaterId' : string,
-  'phoneNumber' : string,
-  'amount' : string,
 }
 export interface BillsPayment {
   'subscriberAccount' : string,
+  'more' : PuerchaseTypeField,
   'reference' : string,
   'billerId' : string,
-  'amount' : string,
   'biller' : string,
 }
 export interface Cashback { 'amount' : bigint, 'percentage' : number }
@@ -26,17 +24,13 @@ export type CashbackType = [] | [
 ];
 export interface DataTopup {
   'operator' : string,
-  'countryCode' : string,
+  'more' : PuerchaseTypeField,
   'operaterId' : string,
-  'phoneNumber' : string,
-  'amount' : string,
 }
 export interface GiftCardPurchase {
+  'more' : PuerchaseTypeField,
   'productId' : string,
-  'countryCode' : string,
   'quantity' : bigint,
-  'phoneNumber' : string,
-  'amount' : string,
   'recipientEmail' : string,
 }
 export interface InternalTxn {
@@ -48,6 +42,7 @@ export interface InternalTxn {
   'userPrincipal' : Principal,
   'reloadlyTxnId' : [] | [string],
   'timestamp' : Time,
+  'quantity' : bigint,
   'cashback' : [] | [Cashback],
 }
 export type Product = { 'GiftCardPurchase' : null } |
@@ -59,6 +54,13 @@ export interface PublicUser {
   'referrals' : Array<Principal>,
   'lastName' : string,
   'firstName' : string,
+}
+export interface PuerchaseTypeField {
+  'name' : string,
+  'countryCode' : string,
+  'logoUrl' : string,
+  'phoneNumber' : string,
+  'amount' : string,
 }
 export interface ReferralReward {
   'referralCode' : string,
@@ -76,6 +78,8 @@ export interface Rentmase {
   'getTxnsByEmail' : ActorMethod<[string], Array<InternalTxn>>,
   'getUser' : ActorMethod<[], Result>,
   'getUserRewards' : ActorMethod<[], Result_3>,
+  'getUsersCashbackTxns' : ActorMethod<[], Array<InternalTxn>>,
+  'getUsersTxns' : ActorMethod<[], Array<InternalTxn>>,
   'intiateTxn' : ActorMethod<[TxnPayload], Result_1>,
   'isReferralCodeUnique' : ActorMethod<[string], boolean>,
   'isUserNameUnique' : ActorMethod<[string], boolean>,
@@ -115,6 +119,7 @@ export interface TxnPayload {
   'userEmail' : string,
   'transferAmount' : bigint,
   'txnType' : TxnType,
+  'quantity' : bigint,
   'cashback' : [] | [Cashback],
 }
 export type TxnStatus = { 'FailedNRefunded' : null } |

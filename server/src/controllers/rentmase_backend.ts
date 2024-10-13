@@ -12,34 +12,35 @@ export const idlFactory = ({ IDL }) => {
     'subaccount' : IDL.Opt(IDL.Vec(IDL.Nat8)),
   });
   const TransferData = IDL.Record({ 'from' : Account, 'amount' : IDL.Nat });
-  const GiftCardPurchase = IDL.Record({
-    'productId' : IDL.Text,
+  const PuerchaseTypeField = IDL.Record({
+    'name' : IDL.Text,
     'countryCode' : IDL.Text,
-    'quantity' : IDL.Int,
+    'logoUrl' : IDL.Text,
     'phoneNumber' : IDL.Text,
     'amount' : IDL.Text,
+  });
+  const GiftCardPurchase = IDL.Record({
+    'more' : PuerchaseTypeField,
+    'productId' : IDL.Text,
+    'quantity' : IDL.Int,
     'recipientEmail' : IDL.Text,
   });
   const BillsPayment = IDL.Record({
     'subscriberAccount' : IDL.Text,
+    'more' : PuerchaseTypeField,
     'reference' : IDL.Text,
     'billerId' : IDL.Text,
-    'amount' : IDL.Text,
     'biller' : IDL.Text,
   });
   const AirtimeTopup = IDL.Record({
     'operator' : IDL.Text,
-    'countryCode' : IDL.Text,
+    'more' : PuerchaseTypeField,
     'operaterId' : IDL.Text,
-    'phoneNumber' : IDL.Text,
-    'amount' : IDL.Text,
   });
   const DataTopup = IDL.Record({
     'operator' : IDL.Text,
-    'countryCode' : IDL.Text,
+    'more' : PuerchaseTypeField,
     'operaterId' : IDL.Text,
-    'phoneNumber' : IDL.Text,
-    'amount' : IDL.Text,
   });
   const TxnType = IDL.Variant({
     'GiftCardPurchase' : GiftCardPurchase,
@@ -61,6 +62,7 @@ export const idlFactory = ({ IDL }) => {
     'userPrincipal' : IDL.Principal,
     'reloadlyTxnId' : IDL.Opt(IDL.Text),
     'timestamp' : Time,
+    'quantity' : IDL.Nat,
     'cashback' : IDL.Opt(Cashback),
   });
   const Result_1 = IDL.Variant({ 'ok' : InternalTxn, 'err' : IDL.Text });
@@ -124,6 +126,7 @@ export const idlFactory = ({ IDL }) => {
     'userEmail' : IDL.Text,
     'transferAmount' : IDL.Nat,
     'txnType' : TxnType,
+    'quantity' : IDL.Nat,
     'cashback' : IDL.Opt(Cashback),
   });
   const UserPayload = IDL.Record({
@@ -155,6 +158,8 @@ export const idlFactory = ({ IDL }) => {
     'getTxnsByEmail' : IDL.Func([IDL.Text], [IDL.Vec(InternalTxn)], ['query']),
     'getUser' : IDL.Func([], [Result], ['query']),
     'getUserRewards' : IDL.Func([], [Result_3], ['query']),
+    'getUsersCashbackTxns' : IDL.Func([], [IDL.Vec(InternalTxn)], ['query']),
+    'getUsersTxns' : IDL.Func([], [IDL.Vec(InternalTxn)], ['query']),
     'intiateTxn' : IDL.Func([TxnPayload], [Result_1], []),
     'isReferralCodeUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
     'isUserNameUnique' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),

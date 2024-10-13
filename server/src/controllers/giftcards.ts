@@ -114,11 +114,11 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     }
 
     const reloadlyTxnId = String(response.data.transactionId);
-
+    
     if (cashback) {
       const _res = await actor.cashbackTxn(
         BigInt(txnId),
-        cashback.percentage,
+        Number(cashback),
         reloadlyTxnId
       );
       if ("err" in _res) {
