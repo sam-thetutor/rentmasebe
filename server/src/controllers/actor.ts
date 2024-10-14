@@ -20,7 +20,7 @@ export const getActor = async () => {
 
   const actor: ActorSubclass<_SERVICE> = Actor.createActor(idlFactory, {
     agent,
-    canisterId: "br5f7-7uaaa-aaaaa-qaaca-cai",
+    canisterId:  process.env.CANISTER_ID,
   });
   return actor;
 };

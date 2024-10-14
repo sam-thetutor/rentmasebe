@@ -45,7 +45,6 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
 };
 
 export const buyGiftCard = async (req: Request, res: Response) => {
-  console.log("Response hearders : ", res.getHeaders());
 
   try {
     const {
@@ -144,7 +143,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     if (error.response) {
       res
         .status(error.response.status)
-        .json({ error: error.response.data.message });
+        .json({ error: error.response.data});
     } else if (error.request) {
       res.status(500).json({ error: "No response received from Reloadly API" });
     } else {
