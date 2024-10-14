@@ -13,6 +13,7 @@ app.use(
     origin: [
       "https://55e7x-xyaaa-aaaal-qmzsq-cai.icp0.io",
       "http://localhost:3000", 
+      `http://bw4dl-smaaa-aaaaa-qaacq-cai.localhost:4943`
     ],
     methods: ['GET', 'POST'],
     credentials: true, 

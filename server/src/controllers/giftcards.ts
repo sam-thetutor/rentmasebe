@@ -45,6 +45,8 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
 };
 
 export const buyGiftCard = async (req: Request, res: Response) => {
+  console.log("Response hearders : ", res.getHeaders());
+
   try {
     const {
       countryCode,
