@@ -56,6 +56,8 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       senderPhone: senderPhone,
     };
 
+    console.log("Payload:", payload);
+
     const response = await axios.post(
       `https://topups${audience}.reloadly.com/topups`,
       payload,
@@ -115,7 +117,6 @@ export const getNumberOperator = async (req: Request, res: Response) => {
   try {
     const { countryCode, phoneNumber, iso } = req.query;
     const accessToken = req.cookies.reloadly_access_token;
-
     if (!accessToken) {
       return res.status(401).json({ error: "Access token not found" });
     }
