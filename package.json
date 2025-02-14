@@ -2,12 +2,12 @@
   "name": "rentmase",
   "version": "1.0.0",
   "description": "Rentmase",
-  "scripts": {
-    "dev": "TS_NODE_FILES=true nodemon -L",
-    "start": "node dist/index.js",
-    "build": "tsc && npm run copy-assets",
-    "copy-assets": "copyfiles -u 1 dist/"
-  },
+"scripts": {
+  "dev": "TS_NODE_FILES=true nodemon -L",
+  "start": "node dist/index.js",
+  "build": "tsc && pnpm run copy-assets",
+  "copy-assets": "copyfiles -u 1 dist/"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
