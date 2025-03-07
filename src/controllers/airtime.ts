@@ -32,7 +32,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     }
 
     const actor = await getActor();
-    const res1 = await actor.transferTransaction(BigInt(txnId));
+    const res1 = await actor.transferTransaction(txnId);
 
     if ("err" in res1) {
       return res
@@ -70,7 +70,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     );
 
     if (response.data.error) {
-      await actor.refundFailedTxn(BigInt(txnId));
+      await actor.refundFailedTxn(txnId);
       return res
         .status(400)
         .json({ error: `Failed to top-up airtime: ${response.data.error}` });
@@ -80,7 +80,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     const reloadlyTxnId = String(response.data.transactionId);
 
     if (cashback) {
-      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, reloadlyTxnId);
+      const _res = await actor.cashbackTxn(txnId, cashback.percentage, reloadlyTxnId);
       if ("err" in _res) {
         return res
           .status(400)
@@ -90,7 +90,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId), reloadlyTxnId);
+    const res3 = await actor.completeTxn(txnId, reloadlyTxnId);
 
     if ("err" in res3) {
       return res.status(400).json({

@@ -79,7 +79,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     }
 
     const actor = await getActor();
-    const res1 = await actor.transferTransaction(BigInt(txnId));
+    const res1 = await actor.transferTransaction(txnId);
 
     if ("err" in res1) {
       return res.status(400).json({ error: res1.err });
@@ -110,7 +110,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     );
 
     if (response.data.error) {
-      await actor.refundFailedTxn(BigInt(txnId));
+      await actor.refundFailedTxn(txnId);
       return res.status(400).json({ error: response.data.error });
     }
 
@@ -118,7 +118,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
     
     if (cashback) {
       const _res = await actor.cashbackTxn(
-        BigInt(txnId),
+        txnId,
         Number(cashback),
         reloadlyTxnId
       );
@@ -130,7 +130,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId), reloadlyTxnId);
+    const res3 = await actor.completeTxn(txnId, reloadlyTxnId);
 
     if ("err" in res3) {
       return res.status(400).json({ error: res3.err });

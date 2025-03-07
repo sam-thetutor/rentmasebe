@@ -33,7 +33,7 @@ export const payBills = async (req: Request, res: Response) => {
 
     const actor = await getActor();
 
-    const res1 = await actor.transferTransaction(BigInt(txnId));
+    const res1 = await actor.transferTransaction(txnId);
 
     if ("err" in res1) {
       return res.status(400).json({ error: res1.err });
@@ -67,7 +67,7 @@ export const payBills = async (req: Request, res: Response) => {
     const reloadlyTxnId = String(response.data.transactionId);
 
     if (cashback) {
-      const _res = await actor.cashbackTxn(BigInt(txnId), cashback.percentage, reloadlyTxnId);
+      const _res = await actor.cashbackTxn(txnId, cashback.percentage, reloadlyTxnId);
       if ("err" in _res) {
         return res.status(400).json({ error: _res.err });
       } else {
@@ -75,7 +75,7 @@ export const payBills = async (req: Request, res: Response) => {
       }
     }
 
-    const res3 = await actor.completeTxn(BigInt(txnId), reloadlyTxnId);
+    const res3 = await actor.completeTxn(txnId, reloadlyTxnId);
 
     if ("err" in res3) {
       return res.status(400).json({ error: res3.err });
