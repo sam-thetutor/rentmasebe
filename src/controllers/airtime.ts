@@ -108,6 +108,7 @@ export const airTimeDataTopUp = async (req: Request, res: Response) => {
     } else if (error.request) {
       res.status(500).json({ error: "No response received from Reloadly API" });
     } else {
+      console.log("Error:", error);
       res.status(500).json({ error: "An unexpected error occurred" });
     }
   }

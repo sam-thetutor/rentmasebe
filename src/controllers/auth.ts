@@ -1,4 +1,3 @@
-
 import e, { Request, Response } from "express";
 import "dotenv/config";
 import axios from "axios";
@@ -29,15 +28,17 @@ export const getAccessToken = async (req: Request, res: Response) => {
   try {
     const audience = req.body.audience;
     const accessToken = await getReloadlyAccessToken(audience);
+    
     res.cookie('reloadly_access_token', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'none',
-      maxAge: 60 * 60 * 1000, 
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 1000,
     });
 
-    res.json({ message: "Authenticated" });
+    res.json({ message: "Access token set successfully" });
   } catch (error) {
+    console.error('Error in getAccessToken:', error);
     res.status(500).json({ error: 'Failed to fetch access token' });
   }
 }

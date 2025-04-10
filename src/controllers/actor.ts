@@ -17,7 +17,7 @@ export const getActor = async () => {
   if (process.env.ENV === "local") {
     agent.fetchRootKey();
   }
-
+  console.log("canister id", process.env.CANISTER_ID);
   const actor: ActorSubclass<_SERVICE> = Actor.createActor(idlFactory, {
     agent,
     canisterId:  process.env.CANISTER_ID,

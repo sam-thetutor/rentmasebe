@@ -7,10 +7,13 @@ dotenv.config();
 
 export const getCountryGiftCards = async (req: Request, res: Response) => {
   try {
+    console.log("country code ", req);
     const { countryCode } = req.query;
+    console.log('Cookies received:', req.cookies); // Debug log
     const accessToken = req.cookies.reloadly_access_token;
 
     if (!accessToken) {
+      console.log('No access token found in cookies'); // Debug log
       return res.status(401).json({ error: "Access token not found" });
     }
 
@@ -24,6 +27,7 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
+
         },
       }
     );
@@ -59,6 +63,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       txnId,
       cashback,
     } = req.body;
+    console.log("req.body cccccccccccc", req.body);
     const accessToken = req.cookies.reloadly_access_token;
 
     if (!accessToken) {
@@ -69,7 +74,7 @@ export const buyGiftCard = async (req: Request, res: Response) => {
       !countryCode ||
       !productId ||
       !quantity ||
-      !unitPrice ||
+       !unitPrice ||
       !recipientPhone ||
       !recipientEmail ||
       !senderName ||
