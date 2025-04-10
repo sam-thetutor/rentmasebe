@@ -36,6 +36,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
       maxAge: 60 * 60 * 1000,
     });
 
+    console.log('Access token set successfully', accessToken);
     res.json({ message: "Access token set successfully" });
   } catch (error) {
     console.error('Error in getAccessToken:', error);
