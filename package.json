@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "TS_NODE_FILES=true nodemon -L",
     "start": "node dist/index.js",
-    "build": "tsc && pnpm run copy-assets",
+    "build": "tsc && npm run copy-assets",
     "copy-assets": "copyfiles -u 1 dist/"
   },
   "keywords": [],
