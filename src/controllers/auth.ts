@@ -32,8 +32,9 @@ export const getAccessToken = async (req: Request, res: Response) => {
     res.cookie('reloadly_access_token', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 60 * 60 * 1000,
+      domain: 'icp0.io'
     });
 
     console.log('Access token set successfully', accessToken);
