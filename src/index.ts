@@ -12,7 +12,7 @@ const app = express();
 // CORS configuration
 app.use(
   cors({
-    origin: "*",
+    origin: '*',
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     credentials: true,
   })
