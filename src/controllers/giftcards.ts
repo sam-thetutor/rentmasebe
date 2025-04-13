@@ -27,7 +27,6 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-
         },
       }
     );
