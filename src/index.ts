@@ -17,7 +17,8 @@ app.use(
       "http://localhost:3000",
       "http://localhost:3001",
       `http://bw4dl-smaaa-aaaaa-qaacq-cai.localhost:4943`,
-      "https://68dc-197-239-10-208.ngrok-free.app"
+      "https://68dc-197-239-10-208.ngrok-free.app",
+      "https://vv4p7-5yaaa-aaaal-asc7a-cai.icp0.io/"
     ],
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
