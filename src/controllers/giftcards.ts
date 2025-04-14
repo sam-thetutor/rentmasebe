@@ -11,7 +11,9 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
     const { countryCode } = req.query;
     console.log('Cookies received:', req.cookies); // Debug log
 
-    const accessToken = req.cookies["reloadly_access_token"];
+    // const accessToken = req.cookies["reloadly_access_token"];
+    const accessToken = 'eyJraWQiOiJjNGE1ZWU1Zi0xYmE2LTQ1N2UtOTI3Yi1lYzdiODliNzcxZTIiLCJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNjMyOSIsImlzcyI6Imh0dHBzOi8vcmVsb2FkbHktc2FuZGJveC5hdXRoMC5jb20vIiwiaHR0cHM6Ly9yZWxvYWRseS5jb20vc2FuZGJveCI6dHJ1ZSwiaHR0cHM6Ly9yZWxvYWRseS5jb20vcHJlcGFpZFVzZXJJZCI6IjI2MzI5IiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXVkIjoiaHR0cHM6Ly9naWZ0Y2FyZHMtc2FuZGJveC5yZWxvYWRseS5jb20iLCJuYmYiOjE3NDQ1NzE2NTksImF6cCI6IjI2MzI5Iiwic2NvcGUiOiJkZXZlbG9wZXIiLCJleHAiOjE3NDQ2NTgwNTksImh0dHBzOi8vcmVsb2FkbHkuY29tL2p0aSI6IjU0ODFjNWM2LTFhZWEtNGU3Ni05Y2MzLThjYWI4NWEzMzE1MSIsImlhdCI6MTc0NDU3MTY1OSwianRpIjoiM2MyNWQ0MmQtYzk3Mi00ZjY0LWI3YzItZmI3M2Q5MWNjZDNhIn0.5p7bWr94hKnVFvhxO4lR3kCUzFlbFhUWIJKqygNLiB4';
+    console.log("accessToken", accessToken);
 
     if (!accessToken) {
       console.log('No access token found in cookies'); // Debug log

@@ -19,6 +19,8 @@ app.use(
       `http://bw4dl-smaaa-aaaaa-qaacq-cai.localhost:4943`,
       "https://68dc-197-239-10-208.ngrok-free.app"
     ],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     credentials: true,
   })
