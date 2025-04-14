@@ -1,5 +1,6 @@
 import express from "express";
 import http from "http";
+import https from "https";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
@@ -38,7 +39,7 @@ app.use("/api", router());
 const PORT = process.env.PORT || 5012;
 const HOST = "0.0.0.0";
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 
 server.listen({ port: PORT, host: HOST }, () => {
   console.log(`Server is running on port ${PORT}`);
