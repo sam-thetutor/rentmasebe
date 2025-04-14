@@ -11,7 +11,7 @@ export const getCountryGiftCards = async (req: Request, res: Response) => {
     const { countryCode } = req.query;
     console.log('Cookies received:', req.cookies); // Debug log
 
-    const accessToken = req.cookies.reloadly_access_token;
+    const accessToken = req.cookies["reloadly_access_token"];
 
     if (!accessToken) {
       console.log('No access token found in cookies'); // Debug log
