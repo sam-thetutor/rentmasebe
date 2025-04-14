@@ -16,7 +16,8 @@ app.use(
       "https://55e7x-xyaaa-aaaal-qmzsq-cai.icp0.io",
       "http://localhost:3000",
       "http://localhost:3001",
-      `http://bw4dl-smaaa-aaaaa-qaacq-cai.localhost:4943`
+      `http://bw4dl-smaaa-aaaaa-qaacq-cai.localhost:4943`,
+      "https://68dc-197-239-10-208.ngrok-free.app"
     ],
     methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
     credentials: true,
